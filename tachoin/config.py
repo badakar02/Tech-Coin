@@ -21,23 +21,23 @@ ensure_tachyon()
 from tachyon.encoding import digest
 
 # ---- Network identity -------------------------------------------------
-NETWORK_ID = "tachoin-mainnet"
-TESTNET_ID = "tachoin-testnet"
+NETWORK_ID = "aether-mainnet"
+TESTNET_ID = "aether-testnet"
 
 # ---- Token metadata ---------------------------------------------------
-TOKEN_NAME = "Tachoin"
-TOKEN_SYMBOL = "TACH"
+TOKEN_NAME = "AetherCoin"
+TOKEN_SYMBOL = "AETH"
 TOKEN_DECIMALS = 18
 
 # Display precision used by the CLI and ``format_tach``.
 DISPLAY_DECIMALS = 6
 
 # ---- Supply -----------------------------------------------------------
-# 100,000,000 TACH expressed in base units (10**18 per TACH).
-TOTAL_SUPPLY = 100_000_000 * (10 ** TOKEN_DECIMALS)
+# 1,000,000,000 AETH expressed in base units (10**18 per AETH).
+TOTAL_SUPPLY = 1_000_000_000 * (10 ** TOKEN_DECIMALS)
 
 # Minted into account balances at genesis and distributed to validators.
-GENESIS_REWARD_POOL = 1_000_000 * (10 ** TOKEN_DECIMALS)
+GENESIS_REWARD_POOL = 10_000_000 * (10 ** TOKEN_DECIMALS)
 
 # Held back for validator issuance; see ``TachoinNode.mint``.
 UNCIRCULATED_SUPPLY = TOTAL_SUPPLY - GENESIS_REWARD_POOL
@@ -47,6 +47,14 @@ MIN_STAKE = 100 * (10 ** TOKEN_DECIMALS)
 MAX_STAKE = 10_000_000 * (10 ** TOKEN_DECIMALS)
 STAKE_REWARD_RATE = 0.05
 UNSTAKE_COOLDOWN_SLOTS = 400
+
+# ---- Mobile Participation Mining (Check-In) ---------------------------
+MOBILE_MINING_REWARD = 10 * (10 ** TOKEN_DECIMALS)  # 10 AETH per daily check-in
+CHECKIN_COOLDOWN_SLOTS = 21600  # ~24 hours at 400ms slots
+
+def checkin_slot_key(address: str) -> bytes:
+    """Derive state key for an account's last check-in slot."""
+    return digest("aether_checkin", address.encode("utf-8"))
 
 # ---- Fees -------------------------------------------------------------
 TRANSFER_FEE = 1_000
@@ -76,7 +84,7 @@ SLOT_MS = 400
 SLOTS_PER_EPOCH = 400
 
 # ---- Addresses --------------------------------------------------------
-ADDR_PREFIX = "tach"
+ADDR_PREFIX = "aeth"
 
 # ---- Sparse Merkle tree keys ------------------------------------------
 #

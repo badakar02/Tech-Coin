@@ -53,7 +53,7 @@ def make_node(count: int = 4):
 class WalletTests(unittest.TestCase):
     def test_generated_address_is_prefixed_and_valid(self):
         wallet = TachoinWallet.generate()
-        self.assertTrue(wallet.address.startswith("tach"))
+        self.assertTrue(wallet.address.startswith("aeth"))
         self.assertTrue(is_valid_address(wallet.address))
 
     def test_seed_roundtrip_is_deterministic(self):
@@ -62,19 +62,19 @@ class WalletTests(unittest.TestCase):
         self.assertEqual(wallet.address, restored.address)
 
     def test_address_is_not_the_tachyon_address(self):
-        """Balances must key off tachoin addresses, not tachyon 'tch' ones."""
+        """Balances must key off aethercoin addresses, not tachyon 'tch' ones."""
         keypair = KeyPair.generate()
         wallet = TachoinWallet(seed=keypair.seed)
         self.assertTrue(keypair.address.startswith("tch"))
         self.assertNotEqual(keypair.address, wallet.address)
 
     def test_invalid_addresses_rejected(self):
-        for candidate in ("", "tach", "tch5abc", "tach!!!!", None, 42):
+        for candidate in ("", "aeth", "tch5abc", "aeth!!!!", None, 42):
             self.assertFalse(is_valid_address(candidate), candidate)
 
     def test_signature_verification(self):
         wallet = TachoinWallet.generate()
-        message = b"transfer 1 TACH"
+        message = b"transfer 1 AETH"
         signature = wallet.sign(message)
         self.assertTrue(TachoinWallet.verify(wallet.address, message, signature))
         self.assertFalse(TachoinWallet.verify(wallet.address, b"other", signature))
@@ -813,7 +813,7 @@ class PackageTests(unittest.TestCase):
             self.assertTrue(hasattr(tachoin, name), name)
 
     def test_token_metadata(self):
-        self.assertEqual(tachoin.TOKEN_SYMBOL, "TACH")
+        self.assertEqual(tachoin.TOKEN_SYMBOL, "AETH")
         self.assertEqual(tachoin.TOKEN_DECIMALS, 18)
         self.assertEqual(tachoin.TOTAL_SUPPLY, TOTAL_SUPPLY)
 

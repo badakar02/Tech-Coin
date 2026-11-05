@@ -25,5 +25,6 @@ tachyon-blockchain/
 
 # Local wallets and scratch files
 wallet.json
+wallet*.json
 *.wallet.json
 *.log

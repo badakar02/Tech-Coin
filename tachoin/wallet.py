@@ -23,8 +23,8 @@ ensure_tachyon()
 from tachyon.crypto import KeyPair, public_key_from_seed, verify
 from tachyon.encoding import decode_with_checksum, encode_with_checksum
 
-#: Human-readable address prefix for every Tachoin network.
-TACHOIN_ADDR_PREFIX = "tach"
+#: Human-readable address prefix for every AetherCoin network.
+TACHOIN_ADDR_PREFIX = "aeth"
 
 SEED_SIZE = 32
 _WALLET_VERSION = 1

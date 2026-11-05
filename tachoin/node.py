@@ -45,12 +45,16 @@ from .config import (
     STATE_KEY_TOTAL_SUPPLY,
     STATE_KEY_UNCIRCULATED_SUPPLY,
     TOKEN_DECIMALS,
+    TOKEN_SYMBOL,
     TRANSFER_FEE,
+    MOBILE_MINING_REWARD,
+    CHECKIN_COOLDOWN_SLOTS,
     balance_key,
     delegation_key,
     nonce_key,
     stake_key,
     validator_stake_key,
+    checkin_slot_key,
 )
 from .genesis import (
     apply_genesis_state,
@@ -66,6 +70,7 @@ from .transaction import (
     PROGRAM_STAKE,
     PROGRAM_TRANSFER,
     PROGRAM_UNSTAKE,
+    PROGRAM_CHECKIN,
     TachoinTx,
     TransactionError,
 )
@@ -76,7 +81,7 @@ from .wallet import TachoinWallet
 
 
 def format_tach(amount: int) -> str:
-    """Format base units as ``"<whole>.<fraction> TACH"``."""
+    """Format base units as ``"<whole>.<fraction> AETH"``."""
     if not isinstance(amount, int) or isinstance(amount, bool):
         raise TypeError("amount must be an integer number of base units")
     sign = "-" if amount < 0 else ""
@@ -84,15 +89,18 @@ def format_tach(amount: int) -> str:
     scale = 10 ** (TOKEN_DECIMALS - DISPLAY_DECIMALS)
     whole, remainder = divmod(value, 10 ** TOKEN_DECIMALS)
     fraction = remainder // scale
-    return f"{sign}{whole}.{fraction:0{DISPLAY_DECIMALS}d} TACH"
+    return f"{sign}{whole}.{fraction:0{DISPLAY_DECIMALS}d} {TOKEN_SYMBOL}"
 
 
 def parse_tach(text: str) -> int:
-    """Parse ``"12.5"``, ``"12.5 TACH"`` or ``"12.5 tach"`` into base units."""
+    """Parse amount strings into base units."""
     if not isinstance(text, str):
         raise ValueError("amount must be a string")
     cleaned = text.strip().replace("_", "")
-    if cleaned.lower().endswith("tach"):
+    lower_sym = TOKEN_SYMBOL.lower()
+    if cleaned.lower().endswith(lower_sym):
+        cleaned = cleaned[: -len(TOKEN_SYMBOL)].strip()
+    elif cleaned.lower().endswith("tach"):
         cleaned = cleaned[: -len("tach")].strip()
     if not cleaned:
         raise ValueError("amount is empty")
@@ -361,6 +369,7 @@ class TachoinNode:
             PROGRAM_BURN: self._apply_burn,
             PROGRAM_STAKE: self._apply_stake,
             PROGRAM_UNSTAKE: self._apply_unstake,
+            PROGRAM_CHECKIN: self._apply_checkin,
         }[tx.program]
 
         snapshot = self.state.snapshot()
@@ -531,6 +540,27 @@ class TachoinNode:
             int_to_bytes(max(0, current_delegation - amount)),
         )
         # Ledger sync deferred to produce_block to keep SMT and ledger in lock-step.
+        return None
+
+    def _apply_checkin(self, tx: TachoinTx) -> Optional[str]:
+        """Apply a mobile participation check-in mining transaction."""
+        last_checkin = bytes_to_int(self.state.get(checkin_slot_key(tx.sender), b"\x00"))
+        if last_checkin > 0 and (tx.slot - last_checkin) < CHECKIN_COOLDOWN_SLOTS:
+            return f"check-in cooldown active; please wait {CHECKIN_COOLDOWN_SLOTS - (tx.slot - last_checkin)} slots"
+
+        uncirculated = self.get_uncirculated_supply()
+        if MOBILE_MINING_REWARD > uncirculated:
+            return "uncirculated reserve exhausted for mobile mining"
+
+        self._credit(tx.sender, MOBILE_MINING_REWARD)
+        self.state.set(
+            STATE_KEY_UNCIRCULATED_SUPPLY, int_to_bytes(uncirculated - MOBILE_MINING_REWARD)
+        )
+        self.state.set(
+            STATE_KEY_CIRCULATING_SUPPLY,
+            int_to_bytes(self.get_circulating_supply() + MOBILE_MINING_REWARD),
+        )
+        self.state.set(checkin_slot_key(tx.sender), int_to_bytes(tx.slot))
         return None
 
     # ---- Block production ---------------------------------------------

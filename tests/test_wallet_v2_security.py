@@ -812,4 +812,7 @@ class TestSecurityProperties(unittest.TestCase):
             
             # Verify format is specified
             self.assertIn('format', payload)
-            self.assertIn('crypto'
+            self.assertIn('crypto', payload)
+        finally:
+            if os.path.exists(temp_path):
+                os.unlink(temp_path)

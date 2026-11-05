@@ -22,9 +22,10 @@ PROGRAM_MINT = "mint"
 PROGRAM_BURN = "burn"
 PROGRAM_STAKE = "stake"
 PROGRAM_UNSTAKE = "unstake"
+PROGRAM_CHECKIN = "checkin"
 
 PROGRAMS = frozenset(
-    {PROGRAM_TRANSFER, PROGRAM_MINT, PROGRAM_BURN, PROGRAM_STAKE, PROGRAM_UNSTAKE}
+    {PROGRAM_TRANSFER, PROGRAM_MINT, PROGRAM_BURN, PROGRAM_STAKE, PROGRAM_UNSTAKE, PROGRAM_CHECKIN}
 )
 
 SCHEMA_REGISTRY = {
@@ -33,6 +34,7 @@ SCHEMA_REGISTRY = {
     PROGRAM_BURN: "BurnSchema",
     PROGRAM_STAKE: "StakeSchema",
     PROGRAM_UNSTAKE: "UnstakeSchema",
+    PROGRAM_CHECKIN: "CheckinSchema",
 }
 class TransferSchema:
     """Schema for transfer transactions."""
@@ -211,6 +213,24 @@ class UnstakeSchema:
                 data["validator"]
             ):
                 raise TransactionError("validator is not a valid tachoin address")
+class CheckinSchema:
+    """Schema for mobile check-in participation mining transactions."""
+
+    REQUIRED_FIELDS: Set[str] = {"type"}
+    ALLOWED_FIELDS: Set[str] = {"type"}
+
+    @staticmethod
+    def validate(data: Dict[str, Any]) -> None:
+        for field in CheckinSchema.REQUIRED_FIELDS:
+            if field not in data:
+                raise TransactionError(f"missing required field '{field}'")
+        for field in data.keys():
+            if field not in CheckinSchema.ALLOWED_FIELDS:
+                raise TransactionError(f"unknown field '{field}'")
+        if not isinstance(data["type"], str) or data["type"] != PROGRAM_CHECKIN:
+            raise TransactionError(f"'type' must be '{PROGRAM_CHECKIN}'")
+
+
 def validate_payload_schema(program: str, data: Dict[str, Any]) -> None:
     """Validate transaction payload using strict schema."""
     if program not in SCHEMA_REGISTRY:
@@ -225,6 +245,7 @@ def validate_payload_schema(program: str, data: Dict[str, Any]) -> None:
         "BurnSchema": BurnSchema,
         "StakeSchema": StakeSchema,
         "UnstakeSchema": UnstakeSchema,
+        "CheckinSchema": CheckinSchema,
     }
     
     schema_class = schema_classes[schema_class_name]

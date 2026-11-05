@@ -26,6 +26,7 @@ from .transaction_schemas import (
     PROGRAM_BURN,
     PROGRAM_STAKE,
     PROGRAM_UNSTAKE,
+    PROGRAM_CHECKIN,
     validate_payload_schema,
 )
 from .exceptions import TransactionError
@@ -36,9 +37,10 @@ PROGRAM_MINT = "mint"
 PROGRAM_BURN = "burn"
 PROGRAM_STAKE = "stake"
 PROGRAM_UNSTAKE = "unstake"
+PROGRAM_CHECKIN = "checkin"
 
 PROGRAMS = frozenset(
-    {PROGRAM_TRANSFER, PROGRAM_MINT, PROGRAM_BURN, PROGRAM_STAKE, PROGRAM_UNSTAKE}
+    {PROGRAM_TRANSFER, PROGRAM_MINT, PROGRAM_BURN, PROGRAM_STAKE, PROGRAM_UNSTAKE, PROGRAM_CHECKIN}
 )
 
 TACHYON_PROGRAM_PREFIX = "tachoin_"
@@ -108,6 +110,10 @@ def encode_unstake(amount: int, validator: str = "") -> bytes:
         amount=_non_negative(amount, "amount"),
         validator=validator,
     )
+
+
+def encode_checkin() -> bytes:
+    return _encode(type=PROGRAM_CHECKIN)
 
 
 def decode_payload(program: str, payload: bytes) -> Dict[str, Any]:
@@ -222,6 +228,12 @@ class TachoinTx:
         return cls.build(
             wallet, PROGRAM_UNSTAKE, encode_unstake(amount, validator), nonce, slot
         )
+
+    @classmethod
+    def build_checkin(
+        cls, wallet: TachoinWallet, nonce: int, slot: int
+    ) -> "TachoinTx":
+        return cls.build(wallet, PROGRAM_CHECKIN, encode_checkin(), nonce, slot)
 
     # ---- Identity -----------------------------------------------------
 
