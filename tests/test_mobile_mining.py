@@ -1,4 +1,4 @@
-"""Tests for mobile participation check-in mining and AetherCoin backend."""
+"""Tests for mobile participation check-in mining and Tech Coin backend."""
 
 import unittest
 from tachoin.client import TachoinClient

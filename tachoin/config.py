@@ -21,19 +21,19 @@ ensure_tachyon()
 from tachyon.encoding import digest
 
 # ---- Network identity -------------------------------------------------
-NETWORK_ID = "aether-mainnet"
-TESTNET_ID = "aether-testnet"
+NETWORK_ID = "techcoin-mainnet"
+TESTNET_ID = "techcoin-testnet"
 
 # ---- Token metadata ---------------------------------------------------
-TOKEN_NAME = "AetherCoin"
-TOKEN_SYMBOL = "AETH"
+TOKEN_NAME = "Tech Coin"
+TOKEN_SYMBOL = "TECH"
 TOKEN_DECIMALS = 18
 
 # Display precision used by the CLI and ``format_tach``.
 DISPLAY_DECIMALS = 6
 
 # ---- Supply -----------------------------------------------------------
-# 1,000,000,000 AETH expressed in base units (10**18 per AETH).
+# 1,000,000,000 TECH expressed in base units (10**18 per TECH).
 TOTAL_SUPPLY = 1_000_000_000 * (10 ** TOKEN_DECIMALS)
 
 # Minted into account balances at genesis and distributed to validators.
@@ -49,12 +49,12 @@ STAKE_REWARD_RATE = 0.05
 UNSTAKE_COOLDOWN_SLOTS = 400
 
 # ---- Mobile Participation Mining (Check-In) ---------------------------
-MOBILE_MINING_REWARD = 10 * (10 ** TOKEN_DECIMALS)  # 10 AETH per daily check-in
+MOBILE_MINING_REWARD = 10 * (10 ** TOKEN_DECIMALS)  # 10 TECH per daily check-in
 CHECKIN_COOLDOWN_SLOTS = 21600  # ~24 hours at 400ms slots
 
 def checkin_slot_key(address: str) -> bytes:
     """Derive state key for an account's last check-in slot."""
-    return digest("aether_checkin", address.encode("utf-8"))
+    return digest("tech_checkin", address.encode("utf-8"))
 
 # ---- Fees -------------------------------------------------------------
 TRANSFER_FEE = 1_000
@@ -84,7 +84,7 @@ SLOT_MS = 400
 SLOTS_PER_EPOCH = 400
 
 # ---- Addresses --------------------------------------------------------
-ADDR_PREFIX = "aeth"
+ADDR_PREFIX = "tech"
 
 # ---- Sparse Merkle tree keys ------------------------------------------
 #

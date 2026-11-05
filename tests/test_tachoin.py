@@ -53,7 +53,7 @@ def make_node(count: int = 4):
 class WalletTests(unittest.TestCase):
     def test_generated_address_is_prefixed_and_valid(self):
         wallet = TachoinWallet.generate()
-        self.assertTrue(wallet.address.startswith("aeth"))
+        self.assertTrue(wallet.address.startswith("tech"))
         self.assertTrue(is_valid_address(wallet.address))
 
     def test_seed_roundtrip_is_deterministic(self):
@@ -813,7 +813,7 @@ class PackageTests(unittest.TestCase):
             self.assertTrue(hasattr(tachoin, name), name)
 
     def test_token_metadata(self):
-        self.assertEqual(tachoin.TOKEN_SYMBOL, "AETH")
+        self.assertEqual(tachoin.TOKEN_SYMBOL, "TECH")
         self.assertEqual(tachoin.TOKEN_DECIMALS, 18)
         self.assertEqual(tachoin.TOTAL_SUPPLY, TOTAL_SUPPLY)
 

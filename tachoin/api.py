@@ -1,4 +1,4 @@
-"""Lightweight REST API backend for mobile (Android & iOS) AetherCoin clients.
+"""Lightweight REST API backend for mobile (Android & iOS) Tech Coin clients.
 
 Built using Python's standard library (zero third-party dependencies).
 Provides endpoints for wallet management, balances, staking, transfers, and
@@ -27,7 +27,7 @@ def get_client() -> TachoinClient:
 
 
 class AetherAPIHandler(BaseHTTPRequestHandler):
-    """HTTP request handler for AetherCoin mobile API."""
+    """HTTP request handler for Tech Coin mobile API."""
 
     def _send_json(self, status: int, data: dict | list) -> None:
         body = json.dumps(data).encode("utf-8")
